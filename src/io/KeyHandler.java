@@ -11,18 +11,19 @@ public class KeyHandler {
 			glfwSetWindowShouldClose(window, true);
 
 		if (key == GLFW_KEY_W) {
+			Game.mainCamera.position.z -= 3 * Render.deltaTime;
 		}
 
 		if (key == GLFW_KEY_A) {
-
+			Game.mainCamera.position.x -= 3 * Render.deltaTime;
 		}
 
 		if (key == GLFW_KEY_S) {
-
+			Game.mainCamera.position.z += 3 * Render.deltaTime;
 		}
 
 		if (key == GLFW_KEY_D) {
-
+			Game.mainCamera.position.x += 3 * Render.deltaTime;
 		}
 	}
 }

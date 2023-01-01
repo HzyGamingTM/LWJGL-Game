@@ -1,6 +1,7 @@
 package Rendering;
 
 import Utils.OurMath;
+import Utils.OurMath.Matrix4f;
 
 import org.lwjgl.opengl.GL30;
 import Main.Game;
@@ -47,27 +48,24 @@ public class Render {
 		GL30.glBindTexture(GL30.GL_TEXTURE_2D, object.mesh.material.textureID);
 		shader.bind();
 
-		OurMath.Matrix4f transformMat = OurMath.Matrix4f.transform(
+		Matrix4f transformMat = Matrix4f.transform(
 			object.pos, object.rotation, object.scale
 		);
 
-		OurMath.Matrix4f viewMat = OurMath.Matrix4f.transform(
+		Matrix4f viewMat = Matrix4f.transform(
 			Game.mainCamera.position.mul(-1),
 			Game.mainCamera.rotation.mul(-1),
 			new OurMath.Vector3(1, 1, 1)
 		);
 
-		OurMath.Matrix4f projectMat = OurMath.Matrix4f.rotate(
+		Matrix4f projectMat = Matrix4f.rotate(
 			shiddy, new OurMath.Vector3(0, 1, 0)
 		);
 
-
 		float fovMul = (float)Math.tan(0.5f * Math.toRadians(Game.mainCamera.fov));
 
-		// console.log(OurMath.Matrix4f.multiply(transformMat, Game.mainCamera.projection));
-
-		shader.setUniform("model", OurMath.Matrix4f.identity());
-		shader.setUniform("view", projectMat);
+		shader.setUniform("model", Matrix4f.identity());
+		shader.setUniform("view", viewMat);
 		shader.setUniform("fovMul", fovMul);
 		shader.setUniform("aspect", Game.mainCamera.aspect);
 		// shader.setUniform("projection", projectionMat);

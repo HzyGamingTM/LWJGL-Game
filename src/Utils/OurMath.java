@@ -197,6 +197,23 @@ public class OurMath {
 			result.set(2, 2, scalar);
 			return result;
 		}
+
+		public static Matrix4f projection(float aspect, float fov, float near, float far) {
+			Matrix4f result = Matrix4f.identity();
+
+			float zm = far - near;
+			float zp = far + near;
+
+			result.set(0, 0, aspect * (1 / (float)Math.tan(fov / 2)));
+			result.set(1, 1, 1 / (float)Math.tan(fov / 2));
+			result.set(2, 2, -zp / zm);
+			result.set(2, 3, -(2 * far * near) / zm);
+			result.set(3, 2, -1f);
+			result.set(3, 3, 0f);
+
+			return result;
+		}
+
 		public static Matrix4f transform(Vector3 position, Vector3 rotation, Vector3 scale) {
 			Matrix4f translationMatrix = Matrix4f.translate(position);
 

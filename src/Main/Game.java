@@ -9,7 +9,6 @@ import Utils.OurMath.Vector3;
 import Utils.OurMath.Vector2;
 
 
-
 public class Game {
 	public static Camera mainCamera;
 	public static Shader shader;
@@ -37,9 +36,9 @@ public class Game {
 		testMesh.create();
 
 		testObject = new GameObject(
-			new Vector3(0, 0, -1),
-			new Vector3(0, 0, 0),
-			new Vector3(1, 1, 1),
+			new Vector3(0f, 0f, -1f),
+			new Vector3(0f, 0f, 0f),
+			new Vector3(1f, 1f, 1f),
 			testMesh
 		);
 
