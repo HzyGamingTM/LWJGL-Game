@@ -117,14 +117,13 @@ public class OurMath {
 	public static class Matrix4f {
 		public static final int SIZE = 4;
 		public float[] elements = new float[SIZE * SIZE];
-		public float get(int y, int x) {
+		public float get(int x, int y) {
 			return elements[y * SIZE + x];
 		}
-		public void set(int y, int x, float value) {
+		public void set(int x, int y, float value) {
 			elements[y * SIZE + x] = value;
 		}
 		public float[] getAll() { return elements; }
-
 		public static Matrix4f identity() {
 			Matrix4f result = new Matrix4f();
 
@@ -141,7 +140,6 @@ public class OurMath {
 
 			return result;
 		}
-
 		public static Matrix4f translate(Vector3 translate) {
 			Matrix4f result = Matrix4f.identity();
 
@@ -151,7 +149,6 @@ public class OurMath {
 
 			return result;
 		}
-
 		public static Matrix4f rotateZ(float angle) {
 			Matrix4f result = Matrix4f.identity();
 			float c = (float) Math.cos(Math.toRadians(angle));
@@ -201,34 +198,35 @@ public class OurMath {
 		public static Matrix4f projection(float aspect, float fov, float near, float far) {
 			Matrix4f result = Matrix4f.identity();
 
-			float zm = far - near;
+			float tanFOV = (float)Math.tan(Math.toRadians(fov / 2));
+			float range = far - near;
 			float zp = far + near;
 
-			result.set(0, 0, aspect * (1 / (float)Math.tan(fov / 2)));
-			result.set(1, 1, 1 / (float)Math.tan(fov / 2));
-			result.set(2, 2, -zp / zm);
-			result.set(2, 3, -(2 * far * near) / zm);
-			result.set(3, 2, -1f);
+			result.set(0, 0, 1f / aspect * tanFOV);
+			result.set(1, 1, 1f / tanFOV);
+			result.set(2, 2, -zp / range);
+			result.set(2, 3, -1f);
+			result.set(3, 2, -((2 * far * near) / range));
 			result.set(3, 3, 0f);
 
 			return result;
 		}
-
 		public static Matrix4f transform(Vector3 position, Vector3 rotation, Vector3 scale) {
-			Matrix4f translationMatrix = Matrix4f.translate(position);
+			Matrix4f result = Matrix4f.identity();
 
+			Matrix4f translationMatrix = Matrix4f.translate(position);
 			Matrix4f rotXMatrix = Matrix4f.rotate(rotation.x, new Vector3(1, 0, 0));
 			Matrix4f rotYMatrix = Matrix4f.rotate(rotation.y, new Vector3(0, 1, 0));
 			Matrix4f rotZMatrix = Matrix4f.rotate(rotation.z, new Vector3(0, 0, 1));
 			Matrix4f scaleMatrix = Matrix4f.scale(scale);
 
 			Matrix4f rotationMatrix = Matrix4f.multiply(rotXMatrix, Matrix4f.multiply(rotYMatrix, rotZMatrix));
-
-			Matrix4f result = Matrix4f.multiply(translationMatrix, Matrix4f.multiply(rotationMatrix, scaleMatrix));
+			result = Matrix4f.multiply(translationMatrix, Matrix4f.multiply(rotationMatrix, scaleMatrix));
 			return result;
 		}
 		public static Matrix4f multiply(Matrix4f matrix, Matrix4f other) {
 			Matrix4f result = Matrix4f.identity();
+
 			for (int i = 0; i < SIZE; i++) {
 				for (int j = 0; j < SIZE; j++) {
 					result.set(i, j, matrix.get(i, 0) * other.get(0, j) +

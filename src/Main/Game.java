@@ -2,11 +2,15 @@ package Main;
 
 import Rendering.Graphics.Mesh;
 import Rendering.Material;
+import Rendering.Render;
 import Rendering.Shader;
 import Rendering.Graphics.Vertex;
 
+import Rendering.Window;
 import Utils.OurMath.Vector3;
 import Utils.OurMath.Vector2;
+import io.Input;
+import org.lwjgl.glfw.GLFW;
 
 
 public class Game {
@@ -15,11 +19,12 @@ public class Game {
 	public static Mesh testMesh;
 	public static Material testMat;
 	public static GameObject testObject;
+	static float speed = 1f;
 
 
 	public void Init() {
 		mainCamera = new Camera(
-			89f, 0.01f, 1000f, 0.75f,
+			89f, 0.01f, 1000f, (float)Window.width / Window.height,
 			new Vector3(0, 0, 1), new Vector3(0, 0, 0)
 		);
 
@@ -44,6 +49,37 @@ public class Game {
 
 		shader = new Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl"); // NOTE: This has to be a Class Path!
 		shader.create();
+	}
+
+	public static void Update() {
+		speed = 1;
+		if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {
+			speed = 2;
+		}
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_W)) {
+			Game.mainCamera.position.z -= speed * Render.deltaTime;
+		}
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_A)) {
+			Game.mainCamera.position.x -= speed * Render.deltaTime;
+		}
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_S)) {
+			Game.mainCamera.position.z += speed * Render.deltaTime;
+		}
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_D)) {
+			Game.mainCamera.position.x += speed * Render.deltaTime;
+		}
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
+			Game.mainCamera.rotation.y -= 60 * Render.deltaTime;
+		}
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
+			Game.mainCamera.rotation.y += 60 * Render.deltaTime;
+		}
 	}
 
 	public class GameObject {

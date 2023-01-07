@@ -58,17 +58,11 @@ public class Render {
 			new OurMath.Vector3(1, 1, 1)
 		);
 
-		Matrix4f projectMat = Matrix4f.rotate(
-			shiddy, new OurMath.Vector3(0, 1, 0)
-		);
-
-		float fovMul = (float)Math.tan(0.5f * Math.toRadians(Game.mainCamera.fov));
-
-		shader.setUniform("model", Matrix4f.identity());
-		shader.setUniform("view", viewMat);
-		shader.setUniform("fovMul", fovMul);
+		Matrix4f proj = Matrix4f.projection(Game.mainCamera.aspect, Game.mainCamera.fov, Game.mainCamera.near, Game.mainCamera.far);
+		shader.setUniform("projection", proj);
+		shader.setUniform("view", Matrix4f.multiply(viewMat, proj));
+		shader.setUniform("model", transformMat);
 		shader.setUniform("aspect", Game.mainCamera.aspect);
-		// shader.setUniform("projection", projectionMat);
 
 		GL30.glDrawElements(GL30.GL_TRIANGLES, object.mesh.indices.length, GL30.GL_UNSIGNED_INT, 0);
 		shader.unbind();

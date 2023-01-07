@@ -2,7 +2,9 @@ package Rendering;
 
 import Main.Game;
 import Utils.OurMath;
-import io.KeyHandler;
+
+import io.Input;
+
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
@@ -17,6 +19,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 	public static int width, height;
+	public Input input;
 	private String title;
 	private long window;
 	public static int fps;
@@ -58,12 +61,15 @@ public class Window {
 		GL.createCapabilities();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		new Game().Init();
+		input = new Input();
+		glfwSetKeyCallback(window, input.keyboard);
+		glfwSetCursorPosCallback(window, input.mouseMove);
+		glfwSetMouseButtonCallback(window, input.mouseButtons);
+		glfwSetScrollCallback(window, input.mouseScroll);
+		glfwSetWindowSizeCallback(window, sizeCallback);
 	}
 
 	public void createCallbacks() {
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			KeyHandler.KeyCallback(window, key, scancode, action, mods);
-		});
 		sizeCallback = new GLFWWindowSizeCallback() {
 			public void invoke(long win, int w, int h) {
 				width = w;
@@ -79,11 +85,14 @@ public class Window {
 				GL11.glViewport(0, 0, width, height);
 				isResized = false;
 			}
+
+			glfwPollEvents();
 			glClearColor(0.25f, 0.7f, 1f, 0.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			Render.RenderFrame();
 			glfwSwapBuffers(window);
-			glfwPollEvents();
+			Game.Update();
+
 			fps++;
 			if (System.currentTimeMillis() > time + 1000) {
 				OurMath.Vector3 pos = Game.testObject.pos;
@@ -99,6 +108,7 @@ public class Window {
 	}
 
 	void Destroy() {
+		new Input().destroy();
 		Game.shader.destroy();
 		Game.testMesh.destroy();
 		glfwFreeCallbacks(window);

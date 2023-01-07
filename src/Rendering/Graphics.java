@@ -2,6 +2,7 @@ package Rendering;
 
 import Utils.OurMath;
 
+import io.Input;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 

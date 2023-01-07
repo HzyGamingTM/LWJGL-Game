@@ -9,13 +9,13 @@ out vec2 passTextureCoord;
 
 uniform mat4 model;
 uniform mat4 view;
-uniform float fovMul;
+
 uniform float aspect;
+
 
 void main() {
     gl_Position = view * model * vec4(position, 1.0);
-    gl_Position.x *= aspect;
-    gl_Position.w *= gl_Position.z + 1;
+    gl_Position.w *= aspect;
 
     passColor = color;
     passTextureCoord = textureCoord;
