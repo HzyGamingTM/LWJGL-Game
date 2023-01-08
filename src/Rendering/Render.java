@@ -1,44 +1,27 @@
 package Rendering;
 
-import Utils.OurMath;
+import Main.Game;
 import Utils.OurMath.Matrix4f;
 
 import org.lwjgl.opengl.GL30;
-import Main.Game;
+
+import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-class console {
-	public static void log(String shiddy) {
-		System.out.println(shiddy);
-	}
-
-	public static void log(OurMath.Matrix4f shiddy) {
-		float[] arr = shiddy.getAll();
-		for (int i = 0; i < 16; ++i) {
-			if (i > 0 && (i & 3) == 0)
-				console.log("");
-			System.out.print(arr[i] + "  ");
-		}
-		console.log("");
-	}
-}
-
 public class Render {
-	public static double deltaTime = 0f;
-	static double lastFrame = 0f;
+	public static double deltaTime = 0f, lastFrame = 0f;
+	public static ArrayList<Game.GameObject> renderables = new ArrayList<>();
 
 	public static void RenderFrame() {
 		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		// Game.testObject.rotation.x += 20 * deltaTime;
-		// Game.testObject.rotation.y += 20 * deltaTime;
-		// Game.testObject.rotation.z += 20 * deltaTime;
-		RenderObject(Game.testObject, Game.shader, (float)lastFrame * 45.f);
+		for (int i = 0; i < renderables.size(); i++)
+			RenderObject(renderables.get(i), Game.shader);
 	}
 
-	public static void RenderObject(Game.GameObject object, Shader shader, float shiddy) {
+	public static void RenderObject(Game.GameObject object, Shader shader) {
 		GL30.glBindVertexArray(object.mesh.vao);
 		GL30.glEnableVertexAttribArray(0);
 		GL30.glEnableVertexAttribArray(1);
@@ -48,23 +31,17 @@ public class Render {
 		GL30.glBindTexture(GL30.GL_TEXTURE_2D, object.mesh.material.textureID);
 		shader.bind();
 
-		Matrix4f transformMat = Matrix4f.transform(
-			object.pos, object.rotation, object.scale
-		);
+		Game.Camera camera = Game.mainCamera;
+		Matrix4f transformMat = Matrix4f.transform(object.pos, object.rotation, object.scale);
+		Matrix4f viewMat = Matrix4f.view(camera.position, camera.rotation);
+		Matrix4f proj = Matrix4f.projection(camera.aspect, camera.fov, camera.near, camera.far);
 
-		Matrix4f viewMat = Matrix4f.transform(
-			Game.mainCamera.position.mul(-1),
-			Game.mainCamera.rotation.mul(-1),
-			new OurMath.Vector3(1, 1, 1)
-		);
-
-		Matrix4f proj = Matrix4f.projection(Game.mainCamera.aspect, Game.mainCamera.fov, Game.mainCamera.near, Game.mainCamera.far);
-		shader.setUniform("projection", proj);
-		shader.setUniform("view", Matrix4f.multiply(viewMat, proj));
 		shader.setUniform("model", transformMat);
-		shader.setUniform("aspect", Game.mainCamera.aspect);
+		shader.setUniform("view", Matrix4f.multiply(viewMat, proj));
+		shader.setUniform("aspect", camera.aspect);
 
 		GL30.glDrawElements(GL30.GL_TRIANGLES, object.mesh.indices.length, GL30.GL_UNSIGNED_INT, 0);
+
 		shader.unbind();
 		GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GL30.glDisableVertexAttribArray(0);

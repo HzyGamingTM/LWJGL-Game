@@ -5,29 +5,30 @@ import Utils.OurMath;
 
 import io.Input;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjglx.opengl.Display;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 	public static int width, height;
 	public Input input;
 	private String title;
-	private long window;
+	public static long window;
 	public static int fps;
 	public static long time;
-
-	GLFWWindowSizeCallback sizeCallback;
-	boolean isResized;
-
+	public static boolean isFullscreen;
+	public static boolean isResized;
+	private GLFWWindowSizeCallback sizeCallback;
+	private static int[] windowPosX = new int[1], windowPosY = new int[1];
 
 	public Window(int width, int height, String title) {
 		this.width = width;
@@ -43,30 +44,24 @@ public class Window {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-		window = glfwCreateWindow(width, height, "Gaming", NULL, NULL);
-		if (window == NULL)
-			throw new RuntimeException("Failed to create window!");
-		createCallbacks();
+		window = glfwCreateWindow(width, height, title, isFullscreen ? GLFW.glfwGetPrimaryMonitor() : 0, 0);
+		if (window == 0) throw new RuntimeException("Failed to create window!");
 
 		GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(
-			window,
-			(vidMode.width() - this.width) / 2,
-			(vidMode.height() - this.height) / 2
-		);
+		windowPosX[0] = (vidMode.width() - width) / 2;
+		windowPosY[0] = (vidMode.height() - height) / 2;
+
 		glfwMakeContextCurrent(window);
 		glfwSwapInterval(1);
 		glfwShowWindow(window);
 
 		GL.createCapabilities();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+
 		new Game().Init();
 		input = new Input();
-		glfwSetKeyCallback(window, input.keyboard);
-		glfwSetCursorPosCallback(window, input.mouseMove);
-		glfwSetMouseButtonCallback(window, input.mouseButtons);
-		glfwSetScrollCallback(window, input.mouseScroll);
-		glfwSetWindowSizeCallback(window, sizeCallback);
+
+		createCallbacks();
 	}
 
 	public void createCallbacks() {
@@ -77,6 +72,13 @@ public class Window {
 				isResized = true;
 			}
 		};
+
+		glfwSetKeyCallback(window, input.keyboard);
+		glfwSetCursorPosCallback(window, input.mouseMove);
+		glfwSetMouseButtonCallback(window, input.mouseButtons);
+		glfwSetScrollCallback(window, input.mouseScroll);
+		glfwSetWindowSizeCallback(window, sizeCallback);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	public void update() {
@@ -104,10 +106,21 @@ public class Window {
 				fps = 0;
 			}
 		}
-		Destroy();
+		destroy();
 	}
 
-	void Destroy() {
+	public static void setFullscreen() {
+		Window.isFullscreen = !isFullscreen;
+		if (isFullscreen) {
+			glfwGetWindowPos(window, windowPosX, windowPosY);
+			glfwSetWindowMonitor(window, GLFW.glfwGetPrimaryMonitor(), 0, 0, width, height, 144);
+		} else {
+			GLFW.glfwSetWindowMonitor(window, 0, windowPosX[0], windowPosY[0], width, height, 144);
+		}
+		GL11.glViewport(0, 0, width, height);
+	}
+
+	void destroy() {
 		new Input().destroy();
 		Game.shader.destroy();
 		Game.testMesh.destroy();

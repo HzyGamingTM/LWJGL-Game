@@ -7,7 +7,6 @@ public class Input {
 	public static boolean[] buttons = new boolean[GLFW.GLFW_MOUSE_BUTTON_LAST];
 	public static double mouseX, mouseY;
 	public static double scrollX, scrollY;
-
 	public GLFWKeyCallback keyboard;
 	public GLFWCursorPosCallback mouseMove;
 	public GLFWMouseButtonCallback mouseButtons;
@@ -44,11 +43,9 @@ public class Input {
 	public static boolean isKeyDown(int key) {
 		return keys[key];
 	}
-
 	public static boolean isButtonDown(int button) {
 		return buttons[button];
 	}
-
 	public void destroy() {
 		keyboard.free();
 		mouseMove.free();

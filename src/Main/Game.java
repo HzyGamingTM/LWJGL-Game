@@ -1,16 +1,13 @@
 package Main;
 
+import Rendering.*;
 import Rendering.Graphics.Mesh;
-import Rendering.Material;
-import Rendering.Render;
-import Rendering.Shader;
-import Rendering.Graphics.Vertex;
 
-import Rendering.Window;
 import Utils.OurMath.Vector3;
-import Utils.OurMath.Vector2;
 import io.Input;
 import org.lwjgl.glfw.GLFW;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 
 public class Game {
@@ -19,7 +16,9 @@ public class Game {
 	public static Mesh testMesh;
 	public static Material testMat;
 	public static GameObject testObject;
-	static float speed = 1f;
+	public static float mouseSens = 0.4f;
+	public static float speed = 1f;
+	static double oldMouseX, oldMouseY, newMouseX, newMouseY;
 
 
 	public void Init() {
@@ -29,15 +28,8 @@ public class Game {
 		);
 
 		testMat = new Material("/textures/image.png");
-		testMesh = new Mesh(new Vertex[] {
-			new Vertex(new Vector3(-0.5f,  0.5f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f), new Vector2(0.0f, 0.0f)),
-			new Vertex(new Vector3(-0.5f, -0.5f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f), new Vector2(0.0f, 1.0f)),
-			new Vertex(new Vector3( 0.5f, -0.5f, 0.0f), new Vector3(0.0f, 0.0f, 1.0f), new Vector2(1.0f, 1.0f)),
-			new Vertex(new Vector3( 0.5f,  0.5f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1.0f, 0.0f))
-		}, new int[] {
-			0, 1, 2,
-			0, 3, 2
-		}, testMat);
+		testMesh = ModelLoader.loadModel("resources/models/pawn.obj", "/textures/image.png");
+
 		testMesh.create();
 
 		testObject = new GameObject(
@@ -47,39 +39,68 @@ public class Game {
 			testMesh
 		);
 
-		shader = new Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl"); // NOTE: This has to be a Class Path!
+		shader = new Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl");
 		shader.create();
+
+		Render.renderables.add(testObject);
 	}
 
 	public static void Update() {
+		mainCamera.aspect = (float) Window.width / Window.height;
+		newMouseX = Input.mouseX;
+		newMouseY = Input.mouseY;
+
+		float rotationY = mainCamera.rotation.y;
+		float x = (float)(Math.sin(Math.toRadians(rotationY)) * speed * Render.deltaTime);
+		float z = (float)(Math.cos(Math.toRadians(rotationY)) * speed * Render.deltaTime);
+
 		speed = 1;
 		if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {
 			speed = 2;
 		}
 
 		if (Input.isKeyDown(GLFW.GLFW_KEY_W)) {
-			Game.mainCamera.position.z -= speed * Render.deltaTime;
+			mainCamera.position.z -= z;
+			mainCamera.position.x -= x;
 		}
 
 		if (Input.isKeyDown(GLFW.GLFW_KEY_A)) {
-			Game.mainCamera.position.x -= speed * Render.deltaTime;
+			mainCamera.position.z += x;
+			mainCamera.position.x -= z;
 		}
 
 		if (Input.isKeyDown(GLFW.GLFW_KEY_S)) {
-			Game.mainCamera.position.z += speed * Render.deltaTime;
+			mainCamera.position.x += x;
+			mainCamera.position.z += z;
 		}
 
 		if (Input.isKeyDown(GLFW.GLFW_KEY_D)) {
-			Game.mainCamera.position.x += speed * Render.deltaTime;
+			mainCamera.position.z -= x;
+			mainCamera.position.x += z;
 		}
 
-		if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
-			Game.mainCamera.rotation.y -= 60 * Render.deltaTime;
-		}
+		if (Input.isKeyDown(GLFW_KEY_SPACE))
+			mainCamera.position.y += speed * Render.deltaTime;
 
-		if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
-			Game.mainCamera.rotation.y += 60 * Render.deltaTime;
-		}
+		if (Input.isKeyDown(GLFW_KEY_LEFT_CONTROL))
+			mainCamera.position.y -= speed * Render.deltaTime;
+
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE))
+			glfwSetInputMode(Window.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		if (Input.isKeyDown(GLFW.GLFW_KEY_F11))
+			Window.setFullscreen();
+
+		float dx = (float)(newMouseX - oldMouseX);
+		float dy = (float)(newMouseY - oldMouseY);
+
+		mainCamera.rotation.x += -dy * mouseSens;
+		mainCamera.rotation.x = Math.max(-89.9f, Math.min(89.9f, mainCamera.rotation.x));
+		mainCamera.rotation.y += -dx * mouseSens;
+
+		oldMouseX = newMouseX;
+		oldMouseY = newMouseY;
 	}
 
 	public class GameObject {
