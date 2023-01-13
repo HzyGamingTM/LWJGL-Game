@@ -1,10 +1,9 @@
 package Rendering;
 
 import Utils.FileUtils;
+import Utils.OurMath.Matrix4f;
 import Utils.OurMath.Vector2;
 import Utils.OurMath.Vector3;
-import Utils.OurMath.Matrix4f;
-
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
@@ -83,7 +82,6 @@ public class Shader {
 		matrix.put(value.getAll()).flip();
 		GL30.glUniformMatrix4fv(getUniformLocation(name), true, matrix);
 	}
-
 	public void bind() {
 		GL30.glUseProgram(programID);
 	}

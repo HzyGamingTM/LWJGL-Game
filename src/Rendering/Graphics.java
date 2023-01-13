@@ -1,8 +1,8 @@
 package Rendering;
 
-import Utils.OurMath;
+import Utils.OurMath.Vector3;
+import Utils.OurMath.Vector2;
 
-import io.Input;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
@@ -11,16 +11,15 @@ import java.nio.IntBuffer;
 
 public class Graphics {
 	public static class Vertex {
-		public OurMath.Vector3 pos, color;
-		public OurMath.Vector2 textureCoord;
+		public Vector3 pos, color;
+		public Vector2 textureCoord;
 
-		public Vertex(OurMath.Vector3 pos, OurMath.Vector3 color, OurMath.Vector2 textureCoord) {
+		public Vertex(Vector3 pos, Vector3 color, Vector2 textureCoord) {
 			this.pos = pos;
 			this.color = color;
 			this.textureCoord = textureCoord;
 		}
 	}
-
 	public static class Mesh {
 		public Vertex[] vertices;
 		public int[] indices;

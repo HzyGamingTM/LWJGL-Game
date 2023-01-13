@@ -2,11 +2,8 @@ package Rendering;
 
 import Main.Game;
 import Utils.OurMath.Matrix4f;
-
 import org.lwjgl.opengl.GL30;
-
 import java.util.ArrayList;
-
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class Render {
@@ -32,12 +29,14 @@ public class Render {
 		shader.bind();
 
 		Game.Camera camera = Game.mainCamera;
-		Matrix4f transformMat = Matrix4f.transform(object.pos, object.rotation, object.scale);
-		Matrix4f viewMat = Matrix4f.view(camera.position, camera.rotation);
-		Matrix4f proj = Matrix4f.projection(camera.aspect, camera.fov, camera.near, camera.far);
+		Matrix4f transformMat, viewMat, proj;
+		transformMat = Matrix4f.transform(object.pos, object.rotation, object.scale);
+		viewMat = Matrix4f.view(camera.position, camera.rotation);
+		proj = Matrix4f.projection(camera.aspect, camera.fov, camera.near, camera.far);
 
 		shader.setUniform("model", transformMat);
-		shader.setUniform("view", Matrix4f.multiply(viewMat, proj));
+		shader.setUniform("projection", proj);
+		shader.setUniform("view", viewMat);
 		shader.setUniform("aspect", camera.aspect);
 
 		GL30.glDrawElements(GL30.GL_TRIANGLES, object.mesh.indices.length, GL30.GL_UNSIGNED_INT, 0);

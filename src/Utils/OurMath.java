@@ -1,6 +1,15 @@
 package Utils;
 
 public class OurMath {
+	public static float Clamp(float val, float min, float max) {
+		return Math.max(min, Math.min(max, val));
+	}
+	public static float Lerp(float a, float b, float f) {
+		return a + f * (b - a);
+	}
+	public static float PreciseLerp(float a, float b, float f) {
+		return a + f * (b - a);
+	}
 	public static class Vector3 {
 		public float x, y, z;
 		public Vector3(float x, float y, float z) {

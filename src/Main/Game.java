@@ -3,6 +3,7 @@ package Main;
 import Rendering.*;
 import Rendering.Graphics.Mesh;
 
+import Rendering.Graphics.Vertex;
 import Utils.OurMath.Vector3;
 import io.Input;
 import org.lwjgl.glfw.GLFW;
@@ -13,11 +14,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Game {
 	public static Camera mainCamera;
 	public static Shader shader;
-	public static Mesh testMesh;
-	public static Material testMat;
-	public static GameObject testObject;
-	public static float mouseSens = 0.4f;
-	public static float speed = 1f;
+	public static GameObject testObject, floorObject;
+	public static float mouseSens = 0.4f, speed = 1f;
 	static double oldMouseX, oldMouseY, newMouseX, newMouseY;
 
 
@@ -27,9 +25,7 @@ public class Game {
 			new Vector3(0, 0, 1), new Vector3(0, 0, 0)
 		);
 
-		testMat = new Material("/textures/image.png");
-		testMesh = ModelLoader.loadModel("resources/models/pawn.obj", "/textures/image.png");
-
+		Mesh testMesh = ModelLoader.loadModel("resources/models/pawn.obj", "/textures/image.png");
 		testMesh.create();
 
 		testObject = new GameObject(
@@ -39,10 +35,20 @@ public class Game {
 			testMesh
 		);
 
+		Mesh floorMesh = ModelLoader.loadModel("resources/models/floor.obj", "/textures/grass.jpg");
+		floorMesh.create();
+		floorObject = new GameObject(
+			new Vector3(0f, -5f, -1f),
+			new Vector3(0f, 0f, 0f),
+			new Vector3(1f, 1f, 1f),
+			floorMesh
+		);
+
 		shader = new Shader("/shaders/mainVertex.glsl", "/shaders/mainFragment.glsl");
 		shader.create();
 
 		Render.renderables.add(testObject);
+		Render.renderables.add(floorObject);
 	}
 
 	public static void Update() {
@@ -50,13 +56,15 @@ public class Game {
 		newMouseX = Input.mouseX;
 		newMouseY = Input.mouseY;
 
-		float rotationY = mainCamera.rotation.y;
-		float x = (float)(Math.sin(Math.toRadians(rotationY)) * speed * Render.deltaTime);
-		float z = (float)(Math.cos(Math.toRadians(rotationY)) * speed * Render.deltaTime);
+		float rotationY, x, z;
+		rotationY = mainCamera.rotation.y;
+		x = (float)(Math.sin(Math.toRadians(rotationY)) * speed * Render.deltaTime);
+		z = (float)(Math.cos(Math.toRadians(rotationY)) * speed * Render.deltaTime);
 
-		speed = 1;
 		if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {
 			speed = 2;
+		} else {
+			speed = 1;
 		}
 
 		if (Input.isKeyDown(GLFW.GLFW_KEY_W)) {
@@ -92,8 +100,8 @@ public class Game {
 		if (Input.isKeyDown(GLFW.GLFW_KEY_F11))
 			Window.setFullscreen();
 
-		float dx = (float)(newMouseX - oldMouseX);
-		float dy = (float)(newMouseY - oldMouseY);
+		float dx = (float) (newMouseX - oldMouseX);
+		float dy = (float) (newMouseY - oldMouseY);
 
 		mainCamera.rotation.x += -dy * mouseSens;
 		mainCamera.rotation.x = Math.max(-89.9f, Math.min(89.9f, mainCamera.rotation.x));
@@ -101,6 +109,13 @@ public class Game {
 
 		oldMouseX = newMouseX;
 		oldMouseY = newMouseY;
+	}
+
+	public static void Destory() {
+		for (int i = 0; i < Render.renderables.size(); i++) {
+			Render.renderables.get(i).mesh.destroy();
+		}
+		Game.shader.destroy();
 	}
 
 	public class GameObject {

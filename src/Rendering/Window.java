@@ -2,31 +2,26 @@ package Rendering;
 
 import Main.Game;
 import Utils.OurMath;
-
 import io.Input;
-
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjglx.opengl.Display;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Window {
-	public static int width, height;
 	public Input input;
-	private String title;
+	public static int width, height;
+	public static String title;
 	public static long window;
 	public static int fps;
 	public static long time;
-	public static boolean isFullscreen;
-	public static boolean isResized;
+	public static boolean isFullscreen, isResized;
 	private GLFWWindowSizeCallback sizeCallback;
 	private static int[] windowPosX = new int[1], windowPosY = new int[1];
 
@@ -114,16 +109,14 @@ public class Window {
 		if (isFullscreen) {
 			glfwGetWindowPos(window, windowPosX, windowPosY);
 			glfwSetWindowMonitor(window, GLFW.glfwGetPrimaryMonitor(), 0, 0, width, height, 144);
-		} else {
-			GLFW.glfwSetWindowMonitor(window, 0, windowPosX[0], windowPosY[0], width, height, 144);
 		}
+		else GLFW.glfwSetWindowMonitor(window, 0, windowPosX[0], windowPosY[0], width, height, 144);
 		GL11.glViewport(0, 0, width, height);
 	}
 
 	void destroy() {
 		new Input().destroy();
-		Game.shader.destroy();
-		Game.testMesh.destroy();
+		Game.Destory();
 		glfwFreeCallbacks(window);
 		glfwDestroyWindow(window);
 		glfwTerminate();

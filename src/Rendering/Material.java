@@ -3,6 +3,7 @@ package Rendering;
 import org.lwjgl.opengl.GL30;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
+
 import java.io.IOException;
 
 public class Material {

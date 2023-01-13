@@ -1,12 +1,10 @@
 package Rendering;
 
-import org.lwjgl.assimp.*;
-
-import Utils.OurMath.Vector3;
-import Utils.OurMath.Vector2;
-
-import Rendering.Graphics.Vertex;
 import Rendering.Graphics.Mesh;
+import Rendering.Graphics.Vertex;
+import Utils.OurMath.Vector2;
+import Utils.OurMath.Vector3;
+import org.lwjgl.assimp.*;
 
 public class ModelLoader {
 	public static Mesh loadModel(String filePath, String texturePath) {
