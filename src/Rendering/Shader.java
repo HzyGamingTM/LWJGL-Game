@@ -2,8 +2,8 @@ package Rendering;
 
 import Utils.FileUtils;
 import Utils.OurMath.Matrix4f;
-import Utils.OurMath.Vector2;
-import Utils.OurMath.Vector3;
+import Utils.OurMath.Vector2f;
+import Utils.OurMath.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
@@ -71,10 +71,10 @@ public class Shader {
 	public void setUniform(String name, boolean value) {
 		GL30.glUniform1i(getUniformLocation(name), value ? 1 : 0);
 	}
-	public void setUniform(String name, Vector2 value) {
+	public void setUniform(String name, Vector2f value) {
 		GL30.glUniform2f(getUniformLocation(name), value.x, value.y);
 	}
-	public void setUniform(String name, Vector3 value) {
+	public void setUniform(String name, Vector3f value) {
 		GL30.glUniform3f(getUniformLocation(name), value.x, value.y, value.z);
 	}
 	public void setUniform(String name, Matrix4f value) {

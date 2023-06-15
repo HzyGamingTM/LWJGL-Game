@@ -2,8 +2,14 @@ package Main;
 import Rendering.Window;
 
 public class Main implements Runnable {
+	public static boolean runMainTread = true;
+
 	public static void main(String[] args) {
-		new Main().start();
+		if (runMainTread) {
+			Window w = new Window(800, 600, "Among Us");
+			w.create();
+			w.update();
+		} else new Main().start();
 	}
 
 	public void start() {

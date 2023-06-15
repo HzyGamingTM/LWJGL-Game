@@ -8,5 +8,8 @@ out vec4 outColor;
 uniform sampler2D tex;
 
 void main() {
-    outColor = texture(tex, passTextureCoord);
+    vec4 texture = texture(tex, passTextureCoord);
+
+    float brightness = (texture.r * 0.2126) + (texture.g * 0.7152) + (texture.b * 0.0722);
+    outColor = brightness * texture;
 }

@@ -92,10 +92,10 @@ public class Window {
 
 			fps++;
 			if (System.currentTimeMillis() > time + 1000) {
-				OurMath.Vector3 pos = Game.testObject.pos;
-				OurMath.Vector3 camPos = Game.mainCamera.position;
+				OurMath.Vector3f pos = Game.testObject.pos;
+				OurMath.Vector3f camPos = Game.mainCamera.rotation;
 				glfwSetWindowTitle(window, title +
-					String.format(" | FPS: %s OBJ Pos: X: %f Y: %f Z: %f Camera: X: %f Y: %f Z: %f", fps, pos.x, pos.y, pos.z, camPos.x, camPos.y, camPos.z)
+					String.format(" | FPS: %s OBJ Pos: X: %f Y: %f Z: %f Camera Rot: X: %f Y: %f Z: %f, ", fps, pos.x, pos.y, pos.z, camPos.x, camPos.y, camPos.z)
 				);
 				time = System.currentTimeMillis();
 				fps = 0;
@@ -116,7 +116,7 @@ public class Window {
 
 	void destroy() {
 		new Input().destroy();
-		Game.Destory();
+		Game.Destroy();
 		glfwFreeCallbacks(window);
 		glfwDestroyWindow(window);
 		glfwTerminate();

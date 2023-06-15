@@ -9,13 +9,30 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
 public class Render {
 	public static double deltaTime = 0f, lastFrame = 0f;
 	public static ArrayList<Game.GameObject> renderables = new ArrayList<>();
+	public static ArrayList<Graphics.GUI> guis = new ArrayList<>();
 
 	public static void RenderFrame() {
 		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		for (int i = 0; i < guis.size(); i++)
+			RenderGUI(guis.get(i), Game.crosshairShader);
+
 		for (int i = 0; i < renderables.size(); i++)
 			RenderObject(renderables.get(i), Game.shader);
+	}
+
+	public static void RenderGUI(Graphics.GUI gui, Shader shader) {
+		GL30.glBindVertexArray(gui.vao);
+		GL30.glEnableVertexAttribArray(GL30.GL_VERTEX_ARRAY);
+		GL30.glActiveTexture(GL30.GL_TEXTURE);
+		GL30.glBindTexture(GL30.GL_TEXTURE_2D, gui.material.textureID);
+		shader.bind();
+		GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, gui.vertices.length);
+		shader.unbind();
+		GL30.glDisableVertexAttribArray(0);
+		GL30.glBindVertexArray(0);
 	}
 
 	public static void RenderObject(Game.GameObject object, Shader shader) {

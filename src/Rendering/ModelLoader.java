@@ -2,8 +2,8 @@ package Rendering;
 
 import Rendering.Graphics.Mesh;
 import Rendering.Graphics.Vertex;
-import Utils.OurMath.Vector2;
-import Utils.OurMath.Vector3;
+import Utils.OurMath.Vector2f;
+import Utils.OurMath.Vector3f;
 import org.lwjgl.assimp.*;
 
 public class ModelLoader {
@@ -21,12 +21,12 @@ public class ModelLoader {
 
 		for (int i = 0; i < vertexCount; i++) {
 			AIVector3D vertex = vertices.get(i);
-			Vector3 meshVertex = new Vector3(vertex.x(), vertex.y(), vertex.z());
+			Vector3f meshVertex = new Vector3f(vertex.x(), vertex.y(), vertex.z());
 
 			AIVector3D normal = normals.get(i);
-			Vector3 meshNormal = new Vector3(normal.x(), normal.y(), normal.z());
+			Vector3f meshNormal = new Vector3f(normal.x(), normal.y(), normal.z());
 
-			Vector2 meshTextureCoord = new Vector2(0, 0);
+			Vector2f meshTextureCoord = new Vector2f(0, 0);
 			if (mesh.mNumUVComponents().get(0) != 0) {
 				AIVector3D texture = mesh.mTextureCoords(0).get(i);
 				meshTextureCoord.x = texture.x();
